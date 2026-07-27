@@ -6,3 +6,21 @@ class UserRole(str, Enum):
     GERENTE = "GERENTE"
     FUNCIONARIO = "FUNCIONARIO"
     VENDEDOR = "VENDEDOR"
+
+class AddressType(str, Enum):
+    RESIDENCIAL = "RESIDENCIAL"
+    TRABALHO = "TRABALHO"
+
+class StockMovementType(str, Enum):
+    ENTRADA = "ENTRADA"
+    TRANSFERENCIA = "TRANSFERENCIA"
+    VENDA = "VENDA"
+    DEVOLUCAO = "DEVOLUCAO"
+    CANCELAMENTO = "CANCELAMENTO"
+    AJUSTE = "AJUSTE"
+
+class SequenceName(str, Enum):
+    PRODUCT = "PRODUCT"
+    SALE = "SALE"
+    PROMISSORY = "PROMISSORY"
+    PAYMENT = "PAYMENT"

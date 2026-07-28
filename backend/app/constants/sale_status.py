@@ -1,0 +1,10 @@
+class SaleStatus:
+    AGUARDANDO = "AGUARDANDO_CONFIRMACAO"
+    CONFIRMADA = "CONFIRMADA"
+    CANCELADA = "CANCELADA"
+
+    ALL = {
+        AGUARDANDO,
+        CONFIRMADA,
+        CANCELADA,
+    }

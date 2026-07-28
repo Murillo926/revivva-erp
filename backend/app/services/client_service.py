@@ -10,14 +10,16 @@ from app.schemas.client import ClientCreate
 
 
 class ClientService:
-    def __init__(self) -> None:
-        self.repository = ClientRepository()
+
+    def __init__(self, db: Session):
+        self.db = db
+        self.repository = ClientRepository(db)
 
     def create(
         self,
-        db: Session,
         data: ClientCreate,
     ) -> Client:
+
         normalized_cpf = re.sub(r"\D", "", data.cpf)
         normalized_phone = re.sub(r"\D", "", data.telefone)
 
@@ -28,7 +30,6 @@ class ClientService:
             )
 
         existing_client = self.repository.get_by_cpf(
-            db=db,
             cpf=normalized_cpf,
         )
 
@@ -67,6 +68,5 @@ class ClientService:
         ]
 
         return self.repository.create(
-            db=db,
             client=client,
         )

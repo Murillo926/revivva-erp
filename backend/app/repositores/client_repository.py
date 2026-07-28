@@ -5,34 +5,79 @@ from app.models.client import Client
 
 
 class ClientRepository:
+
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create(
+        self,
+        client: Client,
+    ) -> Client:
+        self.db.add(client)
+        self.db.flush()
+        self.db.refresh(client)
+
+        return client
+
+    def get_by_id(
+        self,
+        client_id: int,
+    ) -> Client | None:
+        statement = (
+            select(Client)
+            .options(
+                selectinload(Client.enderecos)
+            )
+            .where(Client.id == client_id)
+        )
+
+        return self.db.scalar(statement)
+
     def get_by_cpf(
         self,
-        db: Session,
         cpf: str,
     ) -> Client | None:
         statement = (
             select(Client)
-            .options(selectinload(Client.enderecos))
+            .options(
+                selectinload(Client.enderecos)
+            )
             .where(Client.cpf == cpf)
         )
 
-        return db.scalar(statement)
+        return self.db.scalar(statement)
 
-    def create(
+    def list_all(
         self,
-        db: Session,
-        client: Client,
-    ) -> Client:
-        try:
-            db.add(client)
-            db.commit()
-            db.refresh(client)
+        only_active: bool = False,
+    ) -> list[Client]:
 
-            return self.get_by_cpf(
-                db=db,
-                cpf=client.cpf,
+        statement = (
+            select(Client)
+            .options(
+                selectinload(Client.enderecos)
+            )
+        )
+
+        if only_active:
+            statement = statement.where(
+                Client.ativo.is_(True)
             )
 
-        except Exception:
-            db.rollback()
-            raise
+        statement = statement.order_by(
+            Client.nome
+        )
+
+        return list(
+            self.db.scalars(statement).all()
+        )
+
+    def save(
+        self,
+        client: Client,
+    ) -> Client:
+        self.db.add(client)
+        self.db.flush()
+        self.db.refresh(client)
+
+        return client

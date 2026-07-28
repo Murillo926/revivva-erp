@@ -12,8 +12,6 @@ router = APIRouter(
     tags=["Clients"],
 )
 
-service = ClientService()
-
 
 @router.post(
     "/",
@@ -25,7 +23,9 @@ def create_client(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ) -> ClientResponse:
+
+    service = ClientService(db)
+
     return service.create(
-        db=db,
         data=client,
     )

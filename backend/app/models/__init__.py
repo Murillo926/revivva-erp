@@ -8,6 +8,8 @@ from app.models.client_address import ClientAddress
 from app.models.stock import Stock
 from app.models.stock_movement import StockMovement
 from app.models.seller import Seller
+from app.models.seller_stock import SellerStock
+from app.models.seller_stock_movement import SellerStockMovement
 
 __all__ = [
     "User",
@@ -18,4 +20,6 @@ __all__ = [
     "Stock",
     "StockMovement",
     "Seller",
+    "SellerStock",
+    "SellerStockMovement",
 ]

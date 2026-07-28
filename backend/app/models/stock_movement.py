@@ -61,7 +61,7 @@ class StockMovement(Base):
     )
 
     observacao: Mapped[str | None] = mapped_column(
-        String(255),
+        String(500),
         nullable=True,
     )
 

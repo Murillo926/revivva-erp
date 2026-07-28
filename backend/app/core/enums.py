@@ -18,9 +18,3 @@ class StockMovementType(str, Enum):
     DEVOLUCAO = "DEVOLUCAO"
     CANCELAMENTO = "CANCELAMENTO"
     AJUSTE = "AJUSTE"
-
-class SequenceName(str, Enum):
-    PRODUCT = "PRODUCT"
-    SALE = "SALE"
-    PROMISSORY = "PROMISSORY"
-    PAYMENT = "PAYMENT"

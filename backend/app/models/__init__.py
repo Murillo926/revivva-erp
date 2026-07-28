@@ -5,6 +5,8 @@ from app.models.product import Product
 from app.models.sequence import Sequence
 from app.models.client import Client
 from app.models.client_address import ClientAddress
+from app.models.stock import Stock
+from app.models.stock_movement import StockMovement
 
 __all__ = [
     "User",
@@ -12,4 +14,6 @@ __all__ = [
     "ClientAddress",
     "Product",
     "Sequence",
+    "Stock",
+    "StockMovement",
 ]

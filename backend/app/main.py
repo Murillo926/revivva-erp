@@ -5,6 +5,7 @@ from app.routes.auth_routes import router as auth_router
 from app.routes.client_routes import router as client_router
 from app.routes.product_routes import router as product_router
 from app.routes.stock_routes import router as stock_router
+from app.routes.seller_routes import router as seller_router
 
 from app.config.settings import settings
 
@@ -18,6 +19,7 @@ app.include_router(auth_router)
 app.include_router(client_router)
 app.include_router(product_router)
 app.include_router(stock_router)
+app.include_router(seller_router)
 
 @app.get("/")
 def home():

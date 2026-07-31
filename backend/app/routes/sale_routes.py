@@ -89,7 +89,7 @@ def get_sale_by_code(
     service = SaleService(db)
 
     try:
-        return service.get_by_code(codigo)
+        return service.get_by_codigo(codigo)
 
     except ValueError as error:
         raise HTTPException(
@@ -144,8 +144,8 @@ def confirm_sale(
     try:
         return service.confirm(
             sale_id=sale_id,
+            data=data,
             performed_by_user_id=int(current_user["sub"]),
-            observacao=data.observacao,
         )
 
     except ValueError as error:

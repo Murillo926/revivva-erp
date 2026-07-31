@@ -22,6 +22,7 @@ from app.repositores.seller_stock_movement_repository import (
 )
 from app.repositores.seller_stock_repository import SellerStockRepository
 from app.repositores.sequence_repository import SequenceRepository
+from app.services.finance_service import FinanceService
 from app.schemas.sale.sale import (
     SaleCreate,
     SaleUpdate,
@@ -50,6 +51,7 @@ class SaleService:
         self.seller_stock_movement_repository = (
             SellerStockMovementRepository(db)
         )
+        self.finance_service = FinanceService(db)
 
     def create(
         self,
@@ -176,8 +178,8 @@ class SaleService:
     def confirm(
         self,
         sale_id: int,
+        data: SaleConfirm,
         performed_by_user_id: int,
-        observacao: str | None = None,
     ) -> Sale:
         try:
             sale = self.sale_repository.get_by_id(
@@ -213,10 +215,14 @@ class SaleService:
                 previous_status=previous_status,
                 new_status=SaleStatus.CONFIRMADA,
                 performed_by_user_id=performed_by_user_id,
-                observation=observacao or "Venda confirmada.",
+                observation=data.observacao or "Venda confirmada.",
             )
 
-            self._after_sale_confirmation(sale)
+            self._after_sale_confirmation(
+                sale=sale,
+                data=data,
+                performed_by_user_id=performed_by_user_id,
+            )
 
             self.db.commit()
             return self._get_after_transaction(sale.id)
@@ -551,18 +557,25 @@ class SaleService:
     def _money(value: Decimal | int | float | str) -> Decimal:
         return Decimal(value).quantize(Decimal("0.01"))
 
-    def _after_sale_confirmation(self, sale: Sale) -> None:
-        """
-        Ponto de extensão para futuras integrações executadas dentro
-        da mesma transação da confirmação da venda.
+    def _after_sale_confirmation(
+        self,
+        sale: Sale,
+        data: SaleConfirm,
+        performed_by_user_id: int,
+    ) -> None:
+        """Executa integrações ligadas à confirmação da venda.
 
-        Exemplos futuros:
-        - lançamento financeiro;
-        - cálculo e registro de comissão;
-        - notificações;
-        - atualização de indicadores.
+        O financeiro participa da mesma transação da venda. Caso a geração
+        das parcelas falhe, o ``rollback`` executado por ``confirm`` desfaz
+        também a confirmação e a baixa de estoque.
         """
-        _ = sale
+        self.finance_service.create_accounts_from_sale(
+            sale=sale,
+            total_installments=data.total_parcelas,
+            first_due_date=data.primeiro_vencimento,
+            user_id=performed_by_user_id,
+            observation=data.observacao,
+        )
 
     def _get_after_transaction(self, sale_id: int) -> Sale:
         sale = self.sale_repository.get_by_id(sale_id)

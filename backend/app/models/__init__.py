@@ -11,6 +11,15 @@ from app.models.sequence import Sequence
 from app.models.stock import Stock
 from app.models.stock_movement import StockMovement
 from app.models.user import User
+from app.models.payment_method import PaymentMethod
+from app.models.account_receivable import AccountReceivable
+from app.models.account_receivable_payment import AccountReceivablePayment
+from app.models.account_receivable_history import AccountReceivableHistory
+from app.models.cash_flow import CashFlow
+from app.models.supplier import Supplier
+from app.models.purchase import Purchase
+from app.models.purchase_item import PurchaseItem
+from app.models.purchase_status_history import PurchaseStatusHistory
 
 
 __all__ = [
@@ -27,4 +36,13 @@ __all__ = [
     "Sale",
     "SaleItem",
     "SaleStatusHistory",
+    "PaymentMethod",
+    "AccountReceivable",
+    "AccountReceivablePayment",
+    "AccountReceivableHistory",
+    "CashFlow",
+    "Supplier",
+    "Purchase",
+    "PurchaseItem",
+    "PurchaseStatusHistory",
 ]

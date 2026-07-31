@@ -1,6 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
 
+from datetime import date
+from pydantic import Field
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.sale.sale_item import (
@@ -95,6 +98,13 @@ class SaleConfirm(BaseModel):
         default=None,
         max_length=1000,
     )
+
+    total_parcelas: int = Field(
+        ge=1,
+        le=120,
+    )
+
+    primeiro_vencimento: date
 
 
 class SaleCancel(BaseModel):

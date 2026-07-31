@@ -8,6 +8,10 @@ from app.routes.stock_routes import router as stock_router
 from app.routes.seller_routes import router as seller_router
 from app.routes.seller_stock_routes import router as seller_stock_router
 from app.routes.sale_routes import router as sale_router
+from app.routes.finance_routes import router as finance_router
+from app.routes.purchase_routes import router as purchase_router
+from app.routes.supplier_routes import router as supplier_router
+
 
 from app.config.settings import settings
 
@@ -24,6 +28,9 @@ app.include_router(stock_router)
 app.include_router(seller_router)
 app.include_router(seller_stock_router)
 app.include_router(sale_router)
+app.include_router(finance_router)
+app.include_router(purchase_router)
+app.include_router(supplier_router)
 
 @app.get("/")
 def home():

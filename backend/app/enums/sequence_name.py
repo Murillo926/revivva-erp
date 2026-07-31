@@ -7,3 +7,4 @@ class SequenceName(str, Enum):
     SALE = "SALE"
     PROMISSORY = "PROMISSORY"
     PAYMENT = "PAYMENT"
+    PURCHASE = "PURCHASE"

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -26,6 +26,8 @@ class PurchaseUpdate(BaseModel):
 
 class PurchaseConfirm(BaseModel):
     observacao:str|None=Field(default=None,max_length=1000)
+    total_parcelas:int=Field(ge=1,le=120)
+    primeiro_vencimento:date
 
 class PurchaseCancel(BaseModel):
     observacao:str=Field(min_length=1,max_length=1000)

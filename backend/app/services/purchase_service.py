@@ -14,7 +14,8 @@ from app.repositores.sequence_repository import SequenceRepository
 from app.repositores.stock_movement_repository import StockMovementRepository
 from app.repositores.stock_repository import StockRepository
 from app.repositores.supplier_repository import SupplierRepository
-from app.schemas.purchase import PurchaseCreate, PurchaseUpdate
+from app.schemas.purchase import PurchaseCreate, PurchaseUpdate, PurchaseConfirm
+from app.services.account_payable_service import AccountPayableService
 
 class PurchaseService:
     SEQUENCE_NAME="PURCHASE"
@@ -23,6 +24,7 @@ class PurchaseService:
         self.history_repository=PurchaseStatusHistoryRepository(db); self.supplier_repository=SupplierRepository(db)
         self.product_repository=ProductRepository(db); self.stock_repository=StockRepository(db)
         self.movement_repository=StockMovementRepository(db); self.sequence_repository=SequenceRepository(db)
+        self.account_payable_service=AccountPayableService(db)
     @staticmethod
     def _money(value): return Decimal(value).quantize(Decimal("0.01"))
     def _supplier(self,supplier_id:int):
@@ -80,7 +82,7 @@ class PurchaseService:
             if p.desconto>p.subtotal: raise ValueError("O desconto não pode ser maior que o subtotal.")
             p.total=self._money(p.subtotal-p.desconto+p.frete); self.purchase_repository.save(p); self.db.commit(); return self.get_by_id(p.id)
         except Exception: self.db.rollback(); raise
-    def confirm(self,purchase_id:int,performed_by_user_id:int,observacao:str|None=None)->Purchase:
+    def confirm(self,purchase_id:int,data:PurchaseConfirm,performed_by_user_id:int)->Purchase:
         try:
             p=self.purchase_repository.get_by_id(purchase_id,True)
             if not p: raise ValueError("Compra não encontrada.")
@@ -93,7 +95,8 @@ class PurchaseService:
                 before=stock.quantidade; stock.quantidade=before+item.quantidade; self.stock_repository.save(stock)
                 self.movement_repository.create(StockMovement(stock_id=stock.id,product_id=item.product_id,tipo="ENTRADA_COMPRA",quantidade=item.quantidade,quantidade_anterior=before,quantidade_posterior=stock.quantidade,observacao=f"Entrada referente à compra {p.codigo}."))
             old=p.status; p.status=PurchaseStatus.CONFIRMADA; p.confirmado_por_user_id=performed_by_user_id; p.confirmado_em=datetime.now(timezone.utc); self.purchase_repository.save(p)
-            self._history(p.id,old,p.status,performed_by_user_id,observacao or "Compra confirmada e estoque atualizado.")
+            self._history(p.id,old,p.status,performed_by_user_id,data.observacao or "Compra confirmada e estoque atualizado.")
+            self.account_payable_service.create_accounts_from_purchase(purchase=p,total_installments=data.total_parcelas,first_due_date=data.primeiro_vencimento,user_id=performed_by_user_id,observation=data.observacao)
             self.db.commit(); return self.get_by_id(p.id)
         except Exception: self.db.rollback(); raise
     def cancel(self,purchase_id:int,performed_by_user_id:int,observacao:str)->Purchase:

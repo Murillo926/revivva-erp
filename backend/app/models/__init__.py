@@ -20,6 +20,9 @@ from app.models.supplier import Supplier
 from app.models.purchase import Purchase
 from app.models.purchase_item import PurchaseItem
 from app.models.purchase_status_history import PurchaseStatusHistory
+from app.models.account_payable import AccountPayable
+from app.models.account_payable_payment import AccountPayablePayment
+from app.models.account_payable_history import AccountPayableHistory
 
 
 __all__ = [
@@ -45,4 +48,7 @@ __all__ = [
     "Purchase",
     "PurchaseItem",
     "PurchaseStatusHistory",
+    "AccountPayable",
+    "AccountPayablePayment",
+    "AccountPayableHistory",
 ]

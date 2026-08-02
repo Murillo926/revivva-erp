@@ -11,6 +11,8 @@ from app.routes.sale_routes import router as sale_router
 from app.routes.finance_routes import router as finance_router
 from app.routes.purchase_routes import router as purchase_router
 from app.routes.supplier_routes import router as supplier_router
+from app.routes.account_payable_routes import router as account_payable_router
+from app.routes.cash_flow_routes import router as cash_flow_router
 
 
 from app.config.settings import settings
@@ -31,6 +33,8 @@ app.include_router(sale_router)
 app.include_router(finance_router)
 app.include_router(purchase_router)
 app.include_router(supplier_router)
+app.include_router(account_payable_router)
+app.include_router(cash_flow_router)
 
 @app.get("/")
 def home():

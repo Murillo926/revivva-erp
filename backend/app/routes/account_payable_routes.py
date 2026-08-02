@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-from app.schemas.accounts_payable import AccountPayableCancel, AccountPayableDetailsResponse, AccountPayablePaymentCreate, AccountPayablePaymentResponse, AccountPayableResponse
+from app.schemas.finance.accounts_payable import AccountPayableCancel, AccountPayableDetailsResponse, AccountPayablePaymentCreate, AccountPayablePaymentResponse, AccountPayableResponse
 from app.security.auth import get_current_user
 from app.services.account_payable_service import AccountPayableService
 

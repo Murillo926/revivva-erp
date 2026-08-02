@@ -25,6 +25,7 @@ from app.repositores.account_receivable_repository import (
     AccountReceivableRepository,
 )
 from app.repositores.cash_flow_repository import CashFlowRepository
+from app.repositores.cash_flow_category_repository import CashFlowCategoryRepository
 from app.repositores.payment_method_repository import PaymentMethodRepository
 from app.repositores.sequence_repository import SequenceRepository
 
@@ -47,6 +48,7 @@ class FinanceService:
         self.payment_repository = AccountReceivablePaymentRepository(db)
         self.history_repository = AccountReceivableHistoryRepository(db)
         self.cash_flow_repository = CashFlowRepository(db)
+        self.cash_flow_category_repository = CashFlowCategoryRepository(db)
         self.payment_method_repository = PaymentMethodRepository(db)
         self.sequence_repository = SequenceRepository(db)
 
@@ -113,6 +115,12 @@ class FinanceService:
         flow = CashFlow(
             tipo=FluxoCaixaTipo.ENTRADA.value,
             origem=FluxoCaixaOrigem.VENDA.value,
+            category_id=(
+                self.cash_flow_category_repository.get_by_code("VENDAS").id
+                if self.cash_flow_category_repository.get_by_code("VENDAS")
+                else None
+            ),
+            payment_method_id=payment.payment_method_id,
             reference_type="ACCOUNT_RECEIVABLE_PAYMENT",
             reference_id=payment.id,
             descricao=(

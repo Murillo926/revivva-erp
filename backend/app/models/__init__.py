@@ -16,6 +16,7 @@ from app.models.account_receivable import AccountReceivable
 from app.models.account_receivable_payment import AccountReceivablePayment
 from app.models.account_receivable_history import AccountReceivableHistory
 from app.models.cash_flow import CashFlow
+from app.models.cash_flow_category import CashFlowCategory
 from app.models.supplier import Supplier
 from app.models.purchase import Purchase
 from app.models.purchase_item import PurchaseItem
@@ -44,6 +45,7 @@ __all__ = [
     "AccountReceivablePayment",
     "AccountReceivableHistory",
     "CashFlow",
+    "CashFlowCategory",
     "Supplier",
     "Purchase",
     "PurchaseItem",

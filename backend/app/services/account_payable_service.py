@@ -17,6 +17,7 @@ from app.repositores.account_payable_history_repository import AccountPayableHis
 from app.repositores.account_payable_payment_repository import AccountPayablePaymentRepository
 from app.repositores.account_payable_repository import AccountPayableRepository
 from app.repositores.cash_flow_repository import CashFlowRepository
+from app.repositores.cash_flow_category_repository import CashFlowCategoryRepository
 from app.repositores.payment_method_repository import PaymentMethodRepository
 from app.repositores.sequence_repository import SequenceRepository
 
@@ -31,6 +32,7 @@ class AccountPayableService:
         self.payment_repository = AccountPayablePaymentRepository(db)
         self.history_repository = AccountPayableHistoryRepository(db)
         self.cash_flow_repository = CashFlowRepository(db)
+        self.cash_flow_category_repository = CashFlowCategoryRepository(db)
         self.payment_method_repository = PaymentMethodRepository(db)
         self.sequence_repository = SequenceRepository(db)
 
@@ -145,7 +147,23 @@ class AccountPayableService:
                 self.db.flush()
                 if old != account.status:
                     self._history(account, old, account.status, user_id, f"Pagamento de R$ {applied:.2f} registrado.")
-                self.cash_flow_repository.create(CashFlow(tipo=FluxoCaixaTipo.SAIDA.value, origem=FluxoCaixaOrigem.DESPESA.value, reference_type="ACCOUNT_PAYABLE_PAYMENT", reference_id=payment.id, descricao=f"Pagamento da conta {account.codigo} - parcela {account.numero_parcela}/{account.total_parcelas}", valor=applied, performed_by_user_id=user_id))
+                category = self.cash_flow_category_repository.get_by_code("COMPRAS")
+                self.cash_flow_repository.create(
+                    CashFlow(
+                        tipo=FluxoCaixaTipo.SAIDA.value,
+                        origem=FluxoCaixaOrigem.DESPESA.value,
+                        category_id=category.id if category else None,
+                        payment_method_id=payment_method_id,
+                        reference_type="ACCOUNT_PAYABLE_PAYMENT",
+                        reference_id=payment.id,
+                        descricao=(
+                            f"Pagamento da conta {account.codigo} - parcela "
+                            f"{account.numero_parcela}/{account.total_parcelas}"
+                        ),
+                        valor=applied,
+                        performed_by_user_id=user_id,
+                    )
+                )
                 payments.append(payment)
                 remaining = self._money(remaining - applied)
             self.db.commit()
